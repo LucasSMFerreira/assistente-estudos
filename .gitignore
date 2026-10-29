@@ -1,0 +1,14 @@
+# Ambiente virtual
+.venv/
+
+# Cache do Python e das ferramentas
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+
+# Segredos (senhas)
+.env
+
+# PDFs pessoais
+data/
