@@ -3,6 +3,7 @@ from pathlib import Path
 
 from sqlalchemy import text
 
+from app.ia import gerar_embeddings, para_vetor
 from app.db import engine
 from app.pdf import ler_pdf
 from app.trechos import dividir_em_trechos
@@ -25,13 +26,22 @@ def ingerir_pdf(caminho: Path) -> int:
             {"id": documento_id},
         )
         for numero, texto_pagina in enumerate(paginas, start=1):
-            for trecho in dividir_em_trechos(texto_pagina):
+            trechos = dividir_em_trechos(texto_pagina)
+            if not trechos:
+                continue
+            embeddings = gerar_embeddings(trechos)
+            for trecho, embedding in zip(trechos, embeddings):
                 conn.execute(
                     text(
-                        "INSERT INTO trechos (documento_id, pagina, conteudo) "
-                        "VALUES (:documento_id, :pagina, :conteudo)"
+                        "INSERT INTO trechos (documento_id, pagina, conteudo, embedding) "
+                        "VALUES (:documento_id, :pagina, :conteudo, CAST(:embedding AS vector))"
                     ),
-                    {"documento_id": documento_id, "pagina": numero, "conteudo": trecho},
+                    {
+                        "documento_id": documento_id,
+                        "pagina": numero,
+                        "conteudo": trecho,
+                        "embedding": para_vetor(embedding),
+                    },
                 )
                 total += 1
     return total
