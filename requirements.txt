@@ -6,3 +6,4 @@ pypdf
 sqlalchemy
 psycopg[binary]
 python-dotenv
+python-multipart
