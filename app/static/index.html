@@ -1,0 +1,281 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Assistente de Estudos</title>
+  <style>
+    :root {
+      --fundo: #f4f1ea;
+      --papel: #fffdf8;
+      --tinta: #1f2430;
+      --tinta-suave: #5b6170;
+      --linha: #e2ddd1;
+      --destaque: #2f5d50;
+      --destaque-claro: #e3eee9;
+      --marca-texto: #f3d77a;
+      --erro: #a33a2b;
+      --raio: 14px;
+      --sombra: 0 1px 2px rgba(31, 36, 48, .06), 0 8px 24px rgba(31, 36, 48, .06);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--fundo);
+      color: var(--tinta);
+      font: 16px/1.55 "Segoe UI", system-ui, -apple-system, Roboto, "Helvetica Neue", sans-serif;
+    }
+    .pagina { max-width: 880px; margin: 0 auto; padding: 40px 20px 64px; }
+
+    header { display: flex; align-items: center; gap: 14px; margin-bottom: 8px; }
+    .logo {
+      width: 44px; height: 44px; border-radius: 12px; display: grid; place-items: center;
+      background: var(--destaque); color: #fff; font-size: 22px;
+    }
+    h1 { margin: 0; font-size: 26px; letter-spacing: -.01em; }
+    .subtitulo { margin: 0 0 28px 58px; color: var(--tinta-suave); }
+
+    .cartao {
+      background: var(--papel); border: 1px solid var(--linha); border-radius: var(--raio);
+      box-shadow: var(--sombra); padding: 22px; margin-bottom: 18px;
+    }
+    .rotulo {
+      font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase;
+      color: var(--destaque); margin: 0 0 12px;
+    }
+
+    /* Envio de PDF */
+    .soltar {
+      display: flex; align-items: center; gap: 14px; padding: 16px;
+      border: 2px dashed var(--linha); border-radius: 12px; cursor: pointer;
+      transition: border-color .15s, background .15s;
+    }
+    .soltar:hover, .soltar.ativo { border-color: var(--destaque); background: var(--destaque-claro); }
+    .soltar input { display: none; }
+    .soltar .icone { font-size: 26px; }
+    .soltar strong { display: block; }
+    .soltar span { color: var(--tinta-suave); font-size: 14px; }
+    .status { margin: 10px 0 0; font-size: 14px; color: var(--tinta-suave); min-height: 1.2em; }
+    .status.ok { color: var(--destaque); }
+    .status.erro { color: var(--erro); }
+
+    /* Pergunta */
+    form { display: flex; gap: 10px; }
+    textarea {
+      flex: 1; resize: vertical; min-height: 52px; padding: 13px 14px;
+      font: inherit; color: inherit; background: #fff;
+      border: 1px solid var(--linha); border-radius: 10px;
+    }
+    textarea:focus { outline: 2px solid var(--destaque); outline-offset: 1px; border-color: transparent; }
+    button {
+      font: inherit; font-weight: 600; border: 0; border-radius: 10px; cursor: pointer;
+      padding: 0 22px; background: var(--destaque); color: #fff;
+    }
+    button:disabled { opacity: .55; cursor: wait; }
+    .sugestoes { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+    .sugestoes button {
+      padding: 6px 12px; font-size: 14px; font-weight: 500;
+      background: transparent; color: var(--tinta-suave); border: 1px solid var(--linha);
+    }
+    .sugestoes button:hover { border-color: var(--destaque); color: var(--destaque); }
+
+    /* Resposta */
+    .resposta { display: none; }
+    .resposta.visivel { display: block; }
+    .pergunta-feita { color: var(--tinta-suave); margin: 0 0 10px; font-style: italic; }
+    .texto-resposta { margin: 0 0 20px; font-size: 17px; white-space: pre-wrap; }
+    .carregando { display: flex; align-items: center; gap: 12px; color: var(--tinta-suave); }
+    .giro {
+      width: 20px; height: 20px; border-radius: 50%;
+      border: 3px solid var(--linha); border-top-color: var(--destaque);
+      animation: girar .8s linear infinite;
+    }
+    @keyframes girar { to { transform: rotate(360deg); } }
+
+    .fontes { display: grid; gap: 10px; }
+    .fonte {
+      display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 14px;
+      padding: 12px 14px; border: 1px solid var(--linha); border-radius: 10px; background: #fff;
+    }
+    .fonte .pagina {
+      font-weight: 700; font-size: 13px; padding: 4px 9px; border-radius: 6px;
+      background: var(--marca-texto); white-space: nowrap;
+    }
+    .fonte .doc { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .barra { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--tinta-suave); }
+    .barra .trilho, .barra .cheio { display: block; }
+    .barra .trilho { width: 90px; height: 6px; border-radius: 3px; background: var(--linha); overflow: hidden; }
+    .barra .cheio { height: 100%; background: var(--destaque); }
+
+    footer { margin-top: 28px; text-align: center; font-size: 13px; color: var(--tinta-suave); }
+    footer a { color: var(--destaque); }
+
+    @media (max-width: 600px) {
+      .pagina { padding: 24px 16px 48px; }
+      .subtitulo { margin-left: 0; }
+      form { flex-direction: column; }
+      button[type=submit] { padding: 12px; }
+      .fonte { grid-template-columns: auto 1fr; }
+      .barra { grid-column: 1 / -1; }
+    }
+  </style>
+</head>
+<body>
+  <main class="pagina">
+    <header>
+      <div class="logo" aria-hidden="true">📚</div>
+      <h1>Assistente de Estudos</h1>
+    </header>
+    <p class="subtitulo">Pergunte sobre os seus PDFs de aula. As respostas citam o documento e a página.</p>
+
+    <section class="cartao">
+      <p class="rotulo">1. Envie um PDF</p>
+      <label class="soltar" id="soltar">
+        <input type="file" id="arquivo" accept="application/pdf,.pdf">
+        <span class="icone" aria-hidden="true">📄</span>
+        <div>
+          <strong>Clique ou arraste um PDF aqui</strong>
+          <span>O texto é dividido em trechos e indexado para a busca.</span>
+        </div>
+      </label>
+      <p class="status" id="status-upload"></p>
+    </section>
+
+    <section class="cartao">
+      <p class="rotulo">2. Faça uma pergunta</p>
+      <form id="form-pergunta">
+        <textarea id="pergunta" placeholder="Ex.: O que é o teorema CAP?" required></textarea>
+        <button type="submit" id="botao-perguntar">Perguntar</button>
+      </form>
+      <div class="sugestoes" id="sugestoes">
+        <button type="button">O que é NoSQL?</button>
+        <button type="button">Quais são os tipos de bancos NoSQL?</button>
+        <button type="button">Quando usar um banco chave-valor?</button>
+      </div>
+    </section>
+
+    <section class="cartao resposta" id="resposta" aria-live="polite">
+      <p class="rotulo">Resposta</p>
+      <p class="pergunta-feita" id="pergunta-feita"></p>
+      <div id="conteudo-resposta"></div>
+    </section>
+
+    <footer>
+      FastAPI · PostgreSQL + pgvector · Ollama — rodando num servidor próprio.
+      <a href="/docs">Documentação da API</a>
+    </footer>
+  </main>
+
+  <script>
+    const statusUpload = document.getElementById("status-upload");
+    const soltar = document.getElementById("soltar");
+    const campoArquivo = document.getElementById("arquivo");
+    const form = document.getElementById("form-pergunta");
+    const campoPergunta = document.getElementById("pergunta");
+    const botao = document.getElementById("botao-perguntar");
+    const cartaoResposta = document.getElementById("resposta");
+    const perguntaFeita = document.getElementById("pergunta-feita");
+    const conteudo = document.getElementById("conteudo-resposta");
+
+    function mostrarStatus(texto, tipo) {
+      statusUpload.textContent = texto;
+      statusUpload.className = "status" + (tipo ? " " + tipo : "");
+    }
+
+    async function lerErro(resposta) {
+      try {
+        const dados = await resposta.json();
+        return typeof dados.detail === "string" ? dados.detail : "Erro " + resposta.status;
+      } catch {
+        return "Erro " + resposta.status;
+      }
+    }
+
+    async function enviarPdf(arquivo) {
+      if (!arquivo) return;
+      mostrarStatus("Processando " + arquivo.name + "… a IA está gerando os embeddings, pode levar alguns minutos.");
+      const dados = new FormData();
+      dados.append("arquivo", arquivo);
+      try {
+        const resposta = await fetch("/upload", { method: "POST", body: dados });
+        if (!resposta.ok) throw new Error(await lerErro(resposta));
+        const json = await resposta.json();
+        mostrarStatus("✓ " + json.documento + " indexado em " + json.trechos + " trechos.", "ok");
+      } catch (erro) {
+        mostrarStatus("Não foi possível enviar: " + erro.message, "erro");
+      }
+    }
+
+    campoArquivo.addEventListener("change", () => enviarPdf(campoArquivo.files[0]));
+    ["dragenter", "dragover"].forEach((evento) =>
+      soltar.addEventListener(evento, (e) => { e.preventDefault(); soltar.classList.add("ativo"); }));
+    ["dragleave", "drop"].forEach((evento) =>
+      soltar.addEventListener(evento, (e) => { e.preventDefault(); soltar.classList.remove("ativo"); }));
+    soltar.addEventListener("drop", (e) => enviarPdf(e.dataTransfer.files[0]));
+
+    document.querySelectorAll("#sugestoes button").forEach((b) =>
+      b.addEventListener("click", () => { campoPergunta.value = b.textContent; form.requestSubmit(); }));
+
+    campoPergunta.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); form.requestSubmit(); }
+    });
+
+    function criar(tag, classe, texto) {
+      const el = document.createElement(tag);
+      if (classe) el.className = classe;
+      if (texto !== undefined) el.textContent = texto;
+      return el;
+    }
+
+    function mostrarResposta(json) {
+      conteudo.replaceChildren();
+      conteudo.append(criar("p", "texto-resposta", json.resposta.trim()));
+      if (json.fontes && json.fontes.length) {
+        conteudo.append(criar("p", "rotulo", "Fontes"));
+        const lista = criar("div", "fontes");
+        json.fontes.forEach((f) => {
+          const item = criar("div", "fonte");
+          item.append(criar("span", "pagina", "pág. " + f.pagina));
+          item.append(criar("span", "doc", f.documento));
+          const barra = criar("span", "barra");
+          const trilho = criar("span", "trilho");
+          const cheio = criar("span", "cheio");
+          const pct = Math.max(0, Math.min(1, f.similaridade)) * 100;
+          cheio.style.width = pct + "%";
+          trilho.append(cheio);
+          barra.append(trilho, criar("span", "", Math.round(pct) + "%"));
+          item.append(barra);
+          lista.append(item);
+        });
+        conteudo.append(lista);
+      }
+    }
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const pergunta = campoPergunta.value.trim();
+      if (!pergunta) return;
+      botao.disabled = true;
+      cartaoResposta.classList.add("visivel");
+      perguntaFeita.textContent = "“" + pergunta + "”";
+      conteudo.replaceChildren();
+      const carregando = criar("div", "carregando");
+      carregando.append(criar("div", "giro"), criar("span", "", "Buscando nos seus PDFs e gerando a resposta… a IA local pode levar de 1 a 3 minutos."));
+      conteudo.append(carregando);
+      try {
+        const resposta = await fetch("/perguntar", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ pergunta }),
+        });
+        if (!resposta.ok) throw new Error(await lerErro(resposta));
+        mostrarResposta(await resposta.json());
+      } catch (erro) {
+        conteudo.replaceChildren(criar("p", "status erro", "Não foi possível responder: " + erro.message));
+      } finally {
+        botao.disabled = false;
+      }
+    });
+  </script>
+</body>
+</html>
