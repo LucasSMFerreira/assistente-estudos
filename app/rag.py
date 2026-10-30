@@ -15,9 +15,7 @@ Resposta:"""
 def responder(pergunta: str, k: int = 4) -> dict:
     """Busca os trechos, monta o prompt e devolve a resposta com as fontes."""
     trechos = buscar_trechos(pergunta, k)
-    contexto = "\n\n".join(
-        f"[{t['nome']}, página {t['pagina']}] {t['conteudo']}" for t in trechos
-    )
+    contexto = "\n\n".join(f"[{t['nome']}, página {t['pagina']}] {t['conteudo']}" for t in trechos)
     resposta = gerar_resposta(PROMPT.format(contexto=contexto, pergunta=pergunta))
     fontes = [
         {
