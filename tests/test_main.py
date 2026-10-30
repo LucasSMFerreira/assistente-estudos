@@ -29,3 +29,8 @@ def test_perguntar_sem_pergunta_da_erro_422():
 def test_upload_rejeita_arquivo_que_nao_e_pdf():
     resposta = client.post("/upload", files={"arquivo": ("nota.txt", b"oi", "text/plain")})
     assert resposta.status_code == 400
+
+def test_pagina_inicial_carrega():
+    resposta = client.get("/")
+    assert resposta.status_code == 200
+    assert "Assistente de Estudos" in resposta.text    
