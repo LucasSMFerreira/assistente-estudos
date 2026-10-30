@@ -12,3 +12,6 @@ __pycache__/
 
 # PDFs pessoais
 data/
+
+# Configurações do editor
+.vscode/

@@ -27,5 +27,5 @@ def test_perguntar_sem_pergunta_da_erro_422():
 
 
 def test_upload_rejeita_arquivo_que_nao_e_pdf():
-    reposta = client.post("/upload", files={"arquivo": ("nota.txt", b"oi", "text/plain")})
-    assert reposta.status_code == 400
+    resposta = client.post("/upload", files={"arquivo": ("nota.txt", b"oi", "text/plain")})
+    assert resposta.status_code == 400
