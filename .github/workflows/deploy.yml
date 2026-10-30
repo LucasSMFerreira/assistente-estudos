@@ -1,0 +1,20 @@
+name: Deploy
+
+on:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+    branches: [main]
+
+jobs:
+  deploy:
+    if: github.event.workflow_run.conclusion == 'success'
+    runs-on: self-hosted
+    steps:
+      - uses: actions/checkout@v5
+      - name: Copiar segredos
+        run: cp ~/segredos/assistente-estudos.env .env
+      - name: Subir a nova versão
+        run: docker compose --profile prod up -d --build
+      - name: Verificar
+        run: sleep 10 && curl --fail http://127.0.0.1:8000/health
