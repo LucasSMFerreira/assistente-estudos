@@ -1,3 +1,5 @@
+name: assistente-estudos
+
 services:
   db:
     image: pgvector/pgvector:pg17
@@ -16,6 +18,21 @@ services:
       - "127.0.0.1:11434:11434"
     volumes:
       - modelos_ollama:/root/.ollama
+
+  api:
+    build: .
+    profiles: ["prod"]
+    env_file: .env
+    environment:
+      DATABASE_URL: postgresql+psycopg://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
+      OLLAMA_URL: http://ollama:11434
+    ports:
+      - "127.0.0.1:8000:8000"
+    volumes:
+      - ${HOME}/assistente-dados:/app/data
+    depends_on:
+      - db
+      - ollama
 
 volumes:
   dados_pg:
