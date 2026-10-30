@@ -1,0 +1,17 @@
+[
+  {"pergunta": "O que é CASE WHEN no SQL?", "documento": "bd-aula.pdf", "pagina": 3},
+  {"pergunta": "Qual recurso do SQL permite escolher um resultado de maneira semelhante a um if/else?", "documento": "bd-aula.pdf", "pagina": 3},
+  {"pergunta": "Quando o CASE retorna um valor ao avaliar uma condição?", "documento": "bd-aula.pdf", "pagina": 4},
+  {"pergunta": "Qual é a diferença entre CASE pesquisado e CASE simples?", "documento": "bd-aula.pdf", "pagina": 5},
+  {"pergunta": "Qual tipo de CASE permite escrever uma condição completa em cada WHEN?", "documento": "bd-aula.pdf", "pagina": 5},
+  {"pergunta": "Em que ordem o SQL avalia as condições de um CASE?", "documento": "bd-aula.pdf", "pagina": 6},
+  {"pergunta": "Como usar SUM() OVER para calcular um total acumulado?", "documento": "bd-aula.pdf", "pagina": 18},
+  {"pergunta": "Como mostrar, em cada venda, a soma dos valores registrados até aquele ponto?", "documento": "bd-aula.pdf", "pagina": 18},
+  {"pergunta": "Como calcular a média salarial por departamento usando AVG() OVER?", "documento": "bd-aula.pdf", "pagina": 19},
+  {"pergunta": "Como exibir a quantidade de funcionários de cada grupo usando COUNT() OVER?", "documento": "bd-aula.pdf", "pagina": 20},
+  {"pergunta": "Qual função atribui um número sequencial diferente a cada linha, mesmo quando há empate?", "documento": "bd-aula.pdf", "pagina": 21},
+  {"pergunta": "Como RANK() trata empates e as posições seguintes do ranking?", "documento": "bd-aula.pdf", "pagina": 22},
+  {"pergunta": "Como criar uma classificação separada dos funcionários dentro de cada departamento?", "documento": "bd-aula.pdf", "pagina": 23},
+  {"pergunta": "Qual função permite comparar o valor da linha atual com o da linha anterior?", "documento": "bd-aula.pdf", "pagina": 25},
+  {"pergunta": "Para que serve a função LEAD()?", "documento": "bd-aula.pdf", "pagina": 26}
+]
