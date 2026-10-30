@@ -18,7 +18,7 @@ def responder(pergunta: str, k: int = 4) -> dict:
     contexto = "\n\n".join(
         f"[{t['nome']}, página {t['pagina']}] {t['conteudo']}" for t in trechos
     )
-    resposta = gerar_resposta(PROMPT.format(contexto=___, pergunta=pergunta))
+    resposta = gerar_resposta(PROMPT.format(contexto=contexto, pergunta=pergunta))
     fontes = [
         {
             "documento": t["nome"],
