@@ -9,7 +9,7 @@ from app.pdf import ler_pdf
 from app.trechos import dividir_em_trechos
 
 
-def ingerir_pdf(caminho: Path) -> int:
+def ingerir_pdf(caminho: Path, tamanho: int = 800, sobreposicao: int = 100) -> int:
     """Lê o PDF, divide em trechos e salva no banco. Retorna quantos trechos salvou."""
     paginas = ler_pdf(caminho)
     total = 0
@@ -26,7 +26,7 @@ def ingerir_pdf(caminho: Path) -> int:
             {"id": documento_id},
         )
         for numero, texto_pagina in enumerate(paginas, start=1):
-            trechos = dividir_em_trechos(texto_pagina)
+            trechos = dividir_em_trechos(texto_pagina, tamanho, sobreposicao)
             if not trechos:
                 continue
             embeddings = gerar_embeddings(trechos)
@@ -48,5 +48,8 @@ def ingerir_pdf(caminho: Path) -> int:
 
 
 if __name__ == "__main__":
-    quantidade = ingerir_pdf(Path(sys.argv[1]))
+    tamanho = int(sys.argv[2]) if len(sys.argv) > 2 else 800
+    sobreposicao = int(sys.argv[3]) if len(sys.argv) > 3 else 100
+    quantidade = ingerir_pdf(Path(sys.argv[1]), tamanho, sobreposicao)
     print(f"{quantidade} trechos salvos")
+    
