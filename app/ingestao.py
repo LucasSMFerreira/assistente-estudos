@@ -3,8 +3,8 @@ from pathlib import Path
 
 from sqlalchemy import text
 
-from app.ia import gerar_embeddings, para_vetor
 from app.db import engine
+from app.ia import gerar_embeddings, para_vetor
 from app.pdf import ler_pdf
 from app.trechos import dividir_em_trechos
 
@@ -30,7 +30,7 @@ def ingerir_pdf(caminho: Path, tamanho: int = 800, sobreposicao: int = 100) -> i
             if not trechos:
                 continue
             embeddings = gerar_embeddings(trechos)
-            for trecho, embedding in zip(trechos, embeddings):
+            for trecho, embedding in zip(trechos, embeddings, strict=True):
                 conn.execute(
                     text(
                         "INSERT INTO trechos (documento_id, pagina, conteudo, embedding) "
@@ -52,4 +52,3 @@ if __name__ == "__main__":
     sobreposicao = int(sys.argv[3]) if len(sys.argv) > 3 else 100
     quantidade = ingerir_pdf(Path(sys.argv[1]), tamanho, sobreposicao)
     print(f"{quantidade} trechos salvos")
-    

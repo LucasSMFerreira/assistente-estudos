@@ -1,4 +1,4 @@
-import httpx  
+import httpx
 
 from app.config import OLLAMA_URL
 
