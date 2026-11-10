@@ -1,0 +1,3 @@
+# Mantém a interface HTML fora da estatística de linguagens; o núcleo do projeto é Python
+app/static/** linguist-detectable=false
+*.html linguist-detectable=false
